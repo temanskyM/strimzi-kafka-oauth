@@ -115,7 +115,7 @@ public class OAuthAuthenticator {
         throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("loginWithUsername() - tokenEndpointUrl: {}, clientId: {}, clientSecret: {}, username: {}, password: {}, scope: {}, audience: {}",
-                tokenEndpointUrl, clientId, username, password, scope, audience);
+                tokenEndpointUrl, clientId, clientSecret, username, password, scope, audience);
         }
 
         String authorization = "";

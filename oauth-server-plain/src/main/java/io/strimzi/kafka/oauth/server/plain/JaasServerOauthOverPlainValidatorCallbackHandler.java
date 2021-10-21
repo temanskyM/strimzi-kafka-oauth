@@ -177,8 +177,10 @@ public class JaasServerOauthOverPlainValidatorCallbackHandler extends JaasServer
         try {
             for (Callback callback : callbacks) {
                 if (callback instanceof javax.security.auth.callback.NameCallback) {
+                    log.debug("Received NameCallback: {}", callback);
                     username = ((javax.security.auth.callback.NameCallback) callback).getDefaultName();
                 } else if (callback instanceof org.apache.kafka.common.security.plain.PlainAuthenticateCallback) {
+                    log.debug("Received PlainAuthenticateCallback: {}", callback);
                     password = String.valueOf(((org.apache.kafka.common.security.plain.PlainAuthenticateCallback) callback).password());
                     cb = (org.apache.kafka.common.security.plain.PlainAuthenticateCallback) callback;
                 } else {
@@ -217,9 +219,11 @@ public class JaasServerOauthOverPlainValidatorCallbackHandler extends JaasServer
         String accessToken;
 
         if (password != null && password.startsWith(accessTokenPrefix)) {
+            log.debug("Received accessToken {}", password);
             accessToken = password.substring(accessTokenPrefix.length());
             checkUsernameMatch = true;
         } else if (password != null && tokenEndpointUri == null) {
+            log.debug("Received not null password with null tokenEndpointUri {}", password);
             accessToken = password;
             checkUsernameMatch = true;
         } else {
