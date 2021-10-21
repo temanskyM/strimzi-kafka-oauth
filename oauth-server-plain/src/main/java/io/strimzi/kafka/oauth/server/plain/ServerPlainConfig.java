@@ -11,6 +11,7 @@ import java.util.Properties;
 public class ServerPlainConfig extends Config {
 
     public static final String OAUTH_TOKEN_ENDPOINT_URI = "oauth.token.endpoint.uri";
+    public static final String OAUTH_LOGIN_WITH_USER = "oauth.login.with.user";
 
     public ServerPlainConfig() {
     }

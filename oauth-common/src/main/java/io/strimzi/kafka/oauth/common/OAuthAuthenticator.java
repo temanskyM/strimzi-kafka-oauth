@@ -108,6 +108,33 @@ public class OAuthAuthenticator {
         return post(tokenEndpointUrl, socketFactory, hostnameVerifier, authorization, body.toString(), isJwt, principalExtractor);
     }
 
+    public static TokenInfo loginWithUsername(URI tokenEndpointUrl, SSLSocketFactory socketFactory,
+                                              HostnameVerifier hostnameVerifier,
+                                              String clientId, String clientSecret, String username, String password, boolean isJwt,
+                                              PrincipalExtractor principalExtractor, String scope, String audience)
+        throws IOException {
+        if (log.isDebugEnabled()) {
+            log.debug("loginWithUsername() - tokenEndpointUrl: {}, clientId: {}, clientSecret: {}, username: {}, password: {}, scope: {}, audience: {}",
+                tokenEndpointUrl, clientId, username, password, scope, audience);
+        }
+
+        String authorization = "";
+
+        StringBuilder body = new StringBuilder("grant_type=password");
+        if (scope != null) {
+            body.append("&scope=").append(urlencode(scope));
+        }
+        if (audience != null) {
+            body.append("&audience=").append(urlencode(audience));
+        }
+        body.append("&client_id=").append(urlencode(clientId));
+        body.append("&client_secret=").append(urlencode(clientSecret));
+        body.append("&username=").append(urlencode(username));
+        body.append("&password=").append(urlencode(password));
+
+        return post(tokenEndpointUrl, socketFactory, hostnameVerifier, authorization, body.toString(), isJwt, principalExtractor);
+    }
+
     private static TokenInfo post(URI tokenEndpointUri, SSLSocketFactory socketFactory, HostnameVerifier hostnameVerifier,
                                   String authorization, String body, boolean isJwt, PrincipalExtractor principalExtractor) throws IOException {
 

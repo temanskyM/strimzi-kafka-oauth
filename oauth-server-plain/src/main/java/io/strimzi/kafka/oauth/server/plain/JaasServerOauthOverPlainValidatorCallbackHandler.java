@@ -2,9 +2,11 @@
  * Copyright 2017-2019, Strimzi authors.
  * License: Apache License 2.0 (see the file LICENSE or http://apache.org/licenses/LICENSE-2.0.html).
  */
+
 package io.strimzi.kafka.oauth.server.plain;
 
 import io.strimzi.kafka.oauth.common.BearerTokenWithPayload;
+import io.strimzi.kafka.oauth.common.Config;
 import io.strimzi.kafka.oauth.common.HttpException;
 import io.strimzi.kafka.oauth.common.OAuthAuthenticator;
 import io.strimzi.kafka.oauth.server.JaasServerOauthValidatorCallbackHandler;
@@ -31,7 +33,7 @@ import java.util.Map;
 
 /**
  * This <em>AuthenticateCallbackHandler</em> implements 'OAuth over PLAIN' support.
- *
+ * <p>
  * It is designed for use with the <em>org.apache.kafka.common.security.plain.PlainLoginModule</em> which provides
  * SASL/PLAIN authentication support to Kafka brokers. With this CallbackHandler installed, the client authenticating
  * with SASL/PLAIN mechanism can use the clientId and the secret, setting them as <em>username</em> and <em>password</em>
@@ -114,6 +116,9 @@ public class JaasServerOauthOverPlainValidatorCallbackHandler extends JaasServer
     private URI tokenEndpointUri;
     private String scope;
     private String audience;
+    private String clientId;
+    private String clientSecret;
+    private boolean loginWithUser;
 
     @Override
     public void configure(Map<String, ?> configs, String saslMechanism, List<AppConfigurationEntry> jaasConfigEntries) {
@@ -137,6 +142,9 @@ public class JaasServerOauthOverPlainValidatorCallbackHandler extends JaasServer
 
         scope = config.getValue(ServerConfig.OAUTH_SCOPE);
         audience = config.getValue(ServerConfig.OAUTH_AUDIENCE);
+        clientId = config.getValue(Config.OAUTH_CLIENT_ID);
+        clientSecret = config.getValue(Config.OAUTH_CLIENT_SECRET);
+        loginWithUser = config.getValueAsBoolean(ServerPlainConfig.OAUTH_LOGIN_WITH_USER, false);
 
         super.configure(configs, "OAUTHBEARER", jaasConfigEntries);
 
@@ -215,9 +223,18 @@ public class JaasServerOauthOverPlainValidatorCallbackHandler extends JaasServer
             accessToken = password;
             checkUsernameMatch = true;
         } else {
-            accessToken = OAuthAuthenticator.loginWithClientSecret(tokenEndpointUri, getSocketFactory(), getVerifier(),
+            if (!loginWithUser) {
+                accessToken = OAuthAuthenticator.loginWithClientSecret(tokenEndpointUri, getSocketFactory(),
+                    getVerifier(),
                     username, password, isJwt(), getPrincipalExtractor(), scope, audience)
-                    .token();
+                .token();
+            } else {
+                accessToken = OAuthAuthenticator.loginWithUsername(tokenEndpointUri, getSocketFactory(),
+                    getVerifier(),
+                    clientId, clientSecret, username, password,
+                    isJwt(), getPrincipalExtractor(), scope, audience)
+                .token();
+            }
         }
 
         OAuthBearerValidatorCallback[] callbacks = new OAuthBearerValidatorCallback[] {new OAuthBearerValidatorCallback(accessToken)};

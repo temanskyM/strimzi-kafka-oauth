@@ -4,22 +4,21 @@
  */
 package io.strimzi.kafka.oauth.server;
 
-import io.strimzi.kafka.oauth.common.BearerTokenWithPayload;
-import io.strimzi.kafka.oauth.services.Credentials;
-import io.strimzi.kafka.oauth.services.Principals;
-import io.strimzi.kafka.oauth.services.Services;
-import org.apache.kafka.common.security.auth.KafkaPrincipal;
-import org.apache.kafka.common.security.auth.SaslAuthenticationContext;
-import org.apache.kafka.common.security.plain.internals.PlainSaslServer;
-import org.junit.Test;
-
-import java.util.Collections;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import io.strimzi.kafka.oauth.common.BearerTokenWithPayload;
+import io.strimzi.kafka.oauth.services.Credentials;
+import io.strimzi.kafka.oauth.services.Principals;
+import io.strimzi.kafka.oauth.services.Services;
+import java.util.Collections;
+import org.apache.kafka.common.security.auth.KafkaPrincipal;
+import org.apache.kafka.common.security.auth.SaslAuthenticationContext;
+import org.apache.kafka.common.security.plain.internals.PlainSaslServer;
+import org.junit.Test;
 
 public class OAuthKafkaPrincipalBuilderTest {
 
